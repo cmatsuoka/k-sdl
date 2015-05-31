@@ -4,4 +4,8 @@
 
 #define FILENAME_SIZE 20
 
+int read16l(FILE *);
+void clear_screen(void);
+int load_bcg(char *, int, int);
+
 #endif

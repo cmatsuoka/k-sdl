@@ -17,7 +17,15 @@ struct gfx_driver {
 	int	(*get_key)(void);
 };
 
+extern unsigned char *framebuffer;
+
 int init_graphics(void);
 void deinit_graphics(void);
+void do_update(void);
+void poll_timer(void);
+int get_key(void);
+int keypress(void);
+void flush_block(int, int, int, int);
+void flush_screen(void);
 
 #endif

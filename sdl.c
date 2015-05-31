@@ -23,7 +23,7 @@ extern unsigned char palette[NUM_COLORS * 3];
 static int init_vidmode(void);
 static int deinit_vidmode(void);
 static void sdl_put_block(int, int, int, int);
-static void putpixels(int, int, int, Uint8 *);
+static void _putpixels(int, int, int, Uint8 *);
 static void sdl_timer(void);
 static Uint32 timer_function(Uint32);
 int sdl_is_keypress(void);
@@ -33,7 +33,7 @@ struct gfx_driver gfx_sdl = {
 	init_vidmode,
 	deinit_vidmode,
 	sdl_put_block,
-	NULL,
+	_putpixels,
 	sdl_timer,
 	sdl_is_keypress,
 	sdl_get_keypress
@@ -188,6 +188,7 @@ static void process_events()
 			exit(0);
 			break;
 		case SDL_KEYDOWN:
+			key = event.key.keysym.sym;
 			if (isalpha(key)) {
 				key_enqueue(key);
 			}
@@ -224,9 +225,9 @@ static int init_vidmode()
 	SDL_SetTimer(10, timer_function);
 
 	for (i = 0; i < NUM_COLORS; i++) {
-		color[i].r = palette[i * 3] << 2;
-		color[i].g = palette[i * 3 + 1] << 2;
-		color[i].b = palette[i * 3 + 2] << 2;
+		color[i].r = palette[i * 3];
+		color[i].g = palette[i * 3 + 1];
+		color[i].b = palette[i * 3 + 2];
 		mapped_color[i] = SDL_MapRGB(screen->format,
 					     color[i].r, color[i].g,
 					     color[i].b);
