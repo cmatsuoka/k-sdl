@@ -3,23 +3,39 @@
 #include "common.h"
 #include "graphics.h"
 
-static int font_index[] = {
-	0x050, 0x064, 0x078, 0x08C, 0x0A0, 0x0B4, 0x0CC, 0x0E4, 0x0F8,
-	0x10C, 0x120, 0x134, 0x13E, 0x152, 0x166, 0x17A, 0x192, 0x1AA,
-	0x1BE, 0x1D2, 0x1E6, 0x1FA, 0x20E, 0x222, 0x236, 0x24E, 0x258,
-	0x264, 0x26E, 0x27A
+#define FONT_SIZE 30
+
+/* Fix font indexes:
+    8 <-> 25
+    9 <-- 26
+   26 <-- 27
+   27 <-- 28
+   28 <-- 29
+   29 <-- 28
+*/
+
+static int font_index[FONT_SIZE] = {
+	0x050, 0x064, 0x078, 0x08C, 0x0A0, 0x0B4, 0x0CC, 0x0E4, 0x24e, 0x10C,
+	0x120, 0x134, 0x13E, 0x152, 0x166, 0x17A, 0x192, 0x1AA, 0x1BE, 0x1D2,
+	0x1E6, 0x1FA, 0x20E, 0x222, 0x236, 0x0f8, 0x264, 0x26E, 0x27A, 0x286
 };
 
-static int font_height[] = {
+static unsigned char font_height[FONT_SIZE] = {
 	10, 10, 10, 10, 10, 12, 11, 10, 10, 12,
 	10, 10, 10, 10, 10, 12, 12, 10,  9, 10,
 	10, 10, 10, 12, 12, 10, 10, 12, 10, 10
 };
 
-static int font_cols[] = {
+static unsigned char font_cols[FONT_SIZE] = {
 	2, 2, 1, 2, 2, 2, 2, 2, 1, 1,
 	2, 1, 2, 2, 2, 2, 2, 2, 2, 2,
 	2, 2, 2, 1, 2, 2, 1, 1, 1, 1
+};
+
+static unsigned char font_spacing[FONT_SIZE] = {
+	 9, 11,  9, 11, 10,  8, 11, 11,  6,  7,
+	11,  7, 16, 12, 11, 14, 14, 14, 10, 11,
+	11, 11, 17, 11, 11, 11,  7,  7,  7,  8
 };
 
 static unsigned char font_data[] = {
@@ -115,6 +131,6 @@ void write_text(char *text, unsigned char *buffer)
 				}
 			}
 		}
-		buffer += 10;
+		buffer += font_spacing[c];
 	}
 }

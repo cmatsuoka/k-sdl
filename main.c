@@ -8,7 +8,8 @@ int main(int argc, char **argv)
 	init_graphics();
 
 	clear_screen();
-	write_text("hight atop a craggy cliff|", framebuffer + 320 * 10 + 16);
+	write_text("a long time ago|", framebuffer + 320 * 80 + 16);
+	write_text("high atop a craggy cliff{{{", framebuffer + 320 * 96 + 16);
 	flush_screen();
 	do_update();
 
