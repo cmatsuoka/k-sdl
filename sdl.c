@@ -189,9 +189,9 @@ static void process_events()
 			break;
 		case SDL_KEYDOWN:
 			key = event.key.keysym.sym;
-			if (isalpha(key)) {
+			//if (isalpha(key)) {
 				key_enqueue(key);
-			}
+			//}
 			break;
 		case SDL_KEYUP:
 			break;

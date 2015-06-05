@@ -21,11 +21,8 @@ int main(int argc, char **argv)
 	if (load_bcg(argv[1], 0, 0) < 0) {
 		perror(argv[0]);
 	} else {
-		flush_screen();
-		do_update();
-		while (!keypress()) {
-			poll_timer();
-		}
+		show_screen();
+		get_input();
 	}
 
 	deinit_graphics();	

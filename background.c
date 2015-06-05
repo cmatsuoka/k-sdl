@@ -15,9 +15,10 @@ int load_bcg(char *filename, int offset, int pal_offset)
 	int len;
 	int i, j;
 
-	if ((f = fopen(filename, "rb")) == NULL)
+	if ((f = fopen_wrapper(filename, "rb")) == NULL)
 		return -1;
 
+	offset <<= 2;
 	len = read16l(f);
 
 	for (i = 0; i < len; i++) {

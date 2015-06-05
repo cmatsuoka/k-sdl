@@ -9,10 +9,6 @@ int main(int argc, char **argv)
 
 	clear_screen();
 	intro();
-	flush_screen();
-	do_update();
-
-	sleep(3);
 
 	deinit_graphics();	
 

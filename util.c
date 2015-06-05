@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "common.h"
+#include "graphics.h"
 
 int read16l(FILE *f)
 {
@@ -15,30 +16,73 @@ int read16l(FILE *f)
 	return (b << 8) | a;
 }
 
+int get_input()
+{
+	while (!keypress()) {
+		poll_timer();
+	}
+
+	return get_key() == 0x1b;
+}
+
+int wait(int t)
+{
+	int count = 0;
+
+	while (count++ < t) {
+		if (keypress()) {
+			get_key();
+			return 0;
+		}
+		poll_timer();
+	}
+
+	return 1;
+}
+
+void show_screen()
+{
+	flush_screen();
+	do_update();
+}
+
+static int check_disk()
+{
+	clear_screen();
+	write_text("make sure your karateka", 0x17ca);
+	write_text("disk is in drive a{", 0x1cd2);
+	write_text("press any key to continue", 0x21c8);
+	show_screen();
+
+	return get_input();
+}
+
 FILE *fopen_wrapper(char *filename, char *mode)
 {
 	FILE *f;
 	char *u;
 	int i, len;
 
-	if ((f = fopen(filename, mode)) != NULL) {
-		return f;
-	}
+	do {
+		if ((f = fopen(filename, mode)) != NULL) {
+			return f;
+		}
 
-	if ((u = strdup(filename)) == NULL) {
-		return NULL;
-	}
+		if ((u = strdup(filename)) == NULL) {
+			return NULL;
+		}
 
-	len = strlen(filename);
-	for (i = 0; i < len; i++) {
-		u[i] = toupper(filename[i]);
-	}
+		len = strlen(filename);
+		for (i = 0; i < len; i++) {
+			u[i] = toupper(filename[i]);
+		}
 
-	if ((f = fopen(u, mode)) != NULL) {
-		free(u);
-		return f;
-	}
+		if ((f = fopen(u, mode)) != NULL) {
+			free(u);
+			return f;
+		}
+	} while (check_disk());
 
 	free(u);
-	return NULL;
+	exit(EXIT_FAILURE);
 }
