@@ -82,6 +82,8 @@ FILE *fopen_wrapper(char *filename, char *mode)
 	char *u;
 	int i, len;
 
+	D_(D_WARN "open file %s, mode %s", filename, mode);
+
 	do {
 		if ((f = fopen(filename, mode)) != NULL) {
 			return f;
