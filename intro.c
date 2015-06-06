@@ -55,11 +55,11 @@ static void scroller()
 	for (i = 0; text[i]; i++) {
 		write_text(text[i], FB_WIDTH * FB_HEIGHT / 4);
 
-		for (j = 0; j < 16; j++) {
+		for (j = 0; j < 15; j++) {
 			memmove(framebuffer, framebuffer + FB_WIDTH,
 						FB_WIDTH * (FB_HEIGHT + 11));
 			show_screen();
-			wait(2);
+			wait(1);
 		}
 	}
 }
