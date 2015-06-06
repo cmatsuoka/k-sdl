@@ -27,5 +27,6 @@ int get_key(void);
 int keypress(void);
 void flush_block(int, int, int, int);
 void flush_screen(void);
+void unpack_pixels(int, unsigned char, int);
 
 #endif

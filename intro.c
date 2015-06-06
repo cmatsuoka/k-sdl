@@ -9,7 +9,7 @@ void intro()
 	for (;;) {
 		read_sprite(13);
 		clear_screen();
-		blit_sprite(91, 106, 115);
+		blit_sprite(91, 106, 115, 0);
 		show_screen();
 		wait_nokey(72);
 

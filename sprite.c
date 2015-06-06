@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "common.h"
+#include "graphics.h"
 #include "sprite.h"
 
 #define NUM_SPRITES 13
@@ -40,11 +41,11 @@ static const char *mask_filename[NUM_SPRITES] = {
 };
 
 static unsigned char sprite_buffer[SPRITE_BUFFER_SIZE];
-static int sprite_end_array[256];
+static int sprite_array[256];
 static int sprite_buffer_end = 0;
 
 static unsigned char mask_buffer[SPRITE_BUFFER_SIZE];
-static int mask_end_array[256];
+static int mask_array[256];
 static int mask_buffer_end = 0;
 
 int read_sprite(int num)
@@ -73,8 +74,8 @@ int read_sprite(int num)
 		int si = sprite_buffer_end + i;
 		int index = sprite_buffer[si];
 
-		len = readmem16l(sprite_buffer + si);
-		sprite_end_array[index] = sprite_buffer_end + len;
+		len = readmem16l(sprite_buffer + si + 2);
+		sprite_array[index] = sprite_buffer_end + len;
 
 		if (index == 255) {
 			break;
@@ -112,7 +113,7 @@ int read_sprite(int num)
 		int index = mask_buffer[si];
 
 		len = readmem16l(mask_buffer + si);
-		mask_end_array[index] = mask_buffer_end + len;
+		mask_array[index] = mask_buffer_end + len;
 
 		if (index == 255) {
 			break;
@@ -137,6 +138,66 @@ int read_sprite(int num)
 	return 0;
 }
 
-void blit_sprite(int num, int x, int y)
+static int sprite_rle_count;
+static int mask_rle_count;
+static int sprite_offset;
+static int mask_offset;
+
+static void get_next_pixel(unsigned char *s, unsigned char *m)
 {
+	unsigned char sprite_rle_val = 0;
+	unsigned char mask_rle_val = 0;
+
+	if (sprite_rle_count == 0) {
+		if (sprite_buffer[sprite_offset] == 0x7b) {
+			sprite_offset++;
+			sprite_rle_count = sprite_buffer[sprite_offset + 1];
+			sprite_rle_val = sprite_buffer[sprite_offset];
+			sprite_offset += 2;
+		}
+	} else {
+		*s = sprite_rle_val;
+		sprite_rle_count--;
+	}
+
+	if (mask_rle_count == 0) {
+		if (mask_buffer[mask_offset] == 0x7b) {
+			mask_offset++;
+			mask_rle_count = mask_buffer[mask_offset + 1];
+			mask_rle_val = mask_buffer[mask_offset];
+			mask_offset += 2;
+		}
+	} else {
+		*m = mask_rle_val;
+		mask_rle_count--;
+	}
 }
+
+void blit_sprite(int num, int x, int y, int pal_offset)
+{
+	int width, height;
+	int offset;
+	int i, j;
+	unsigned char s, m;
+
+	sprite_rle_count = 0;
+	mask_rle_count = 0;
+
+	sprite_offset = sprite_array[num];
+	mask_offset = mask_array[num];
+	width = sprite_buffer[sprite_offset];
+	height = sprite_buffer[sprite_offset + 1];
+
+	y -= height;
+	offset = y * FB_WIDTH;
+	sprite_offset += 3;
+	mask_offset += 3;
+
+	for (j = 0; j < width; j += 4) {
+		for (i = 0; i < height; i++) {
+			get_next_pixel(&s, &m);
+			unpack_pixels(offset + j + i * FB_WIDTH, s, pal_offset);
+		}
+	}
+}
+

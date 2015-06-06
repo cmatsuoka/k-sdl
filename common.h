@@ -6,6 +6,8 @@
 
 #include <stdio.h>
 
+#define read8(f) fgetc(f)
+
 FILE *fopen_wrapper(char *, char *);
 int read16l(FILE *);
 int readmem16l(unsigned char *);

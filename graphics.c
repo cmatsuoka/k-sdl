@@ -132,3 +132,14 @@ void flush_screen()
 	flush_block(0, 0, FB_WIDTH - 1, FB_HEIGHT - 1);
 }
 
+
+void unpack_pixels(int offset, unsigned char pixels, int pal_offset)
+{
+	int i;
+
+	for (i = 0; i < 4; i++) {
+		framebuffer[offset + i] = ((pixels & 0xc0) >> 6) + pal_offset;
+		pixels <<= 2;
+	}
+}
+
