@@ -16,6 +16,16 @@ int read16l(FILE *f)
 	return (b << 8) | a;
 }
 
+int readmem16l(unsigned char *buffer)
+{
+	int a, b;
+
+	a = buffer[0];
+	b = buffer[1];
+
+	return (b << 8) | a;
+}
+
 int get_input()
 {
 	while (!keypress()) {
@@ -27,9 +37,9 @@ int get_input()
 
 int wait(int t)
 {
-	int count = 0;
+	int i;
 
-	while (count++ < t) {
+	for (i = 0; i < t; i++) {
 		if (keypress()) {
 			get_key();
 			return 0;
@@ -38,6 +48,15 @@ int wait(int t)
 	}
 
 	return 1;
+}
+
+void wait_nokey(int t)
+{
+	int i;
+
+	for (i = 0; i < t; i++) {
+		poll_timer();
+	}
 }
 
 void show_screen()

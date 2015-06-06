@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "common.h"
+#include "sprite.h"
 
 #define NUM_SPRITES 13
 #define SPRITE_BUFFER_SIZE 3000
@@ -38,10 +39,13 @@ static const char *mask_filename[NUM_SPRITES] = {
 	"kmi"		/* Broderbund logo */
 };
 
+static unsigned char sprite_buffer[SPRITE_BUFFER_SIZE];
+static int sprite_end_array[256];
+static int sprite_buffer_end = 0;
 
-static uint8_t *sprite_buffer[SPRITE_BUFFER_SIZE];
-static int sprite_buffer_end;
-
+static unsigned char mask_buffer[SPRITE_BUFFER_SIZE];
+static int mask_end_array[256];
+static int mask_buffer_end = 0;
 
 int read_sprite(int num)
 {
@@ -59,22 +63,20 @@ int read_sprite(int num)
 	strncpy(filename, sprite_filename[num], FILENAME_SIZE);
 	strncat(filename, ".ind", FILENAME_SIZE);
 
-	if ((f = fopen(filename, "rb")) == NULL) {
+	if ((f = fopen_wrapper(filename, "rb")) == NULL) {
 		return -1;
 	}
 	fread(sprite_buffer + sprite_buffer_end, 1, 680, f);
 	fclose(f);
 
-	for (i = 0; i < 680; i++) {
+	for (i = 0; i < 680; i += 4) {
 		int si = sprite_buffer_end + i;
-		int index = sprite_buffer[si].index;
+		int index = sprite_buffer[si];
 
-		sprite_end_array[index] = sprite_buffer_end +
-						sprite_data[si].len;
-		var_2c = si;
+		len = readmem16l(sprite_buffer + si);
+		sprite_end_array[index] = sprite_buffer_end + len;
 
 		if (index == 255) {
-			len = sprite_buffer[si].len;
 			break;
 		}
 	}
@@ -84,7 +86,7 @@ int read_sprite(int num)
 	strncpy(filename, sprite_filename[num], FILENAME_SIZE);
 	strncat(filename, ".dat", FILENAME_SIZE);
 
-	if ((f = fopen(filename, "rb")) == NULL) {
+	if ((f = fopen_wrapper(filename, "rb")) == NULL) {
 		return -1;
 	}
 	fread(sprite_buffer + sprite_buffer_end, 1, len, f);
@@ -99,16 +101,22 @@ int read_sprite(int num)
 	strncpy(filename, mask_filename[num], FILENAME_SIZE);
 	strncat(filename, ".ind", FILENAME_SIZE);
 
-	if ((f = fopen(filename, "rb")) == NULL) {
+	if ((f = fopen_wrapper(filename, "rb")) == NULL) {
 		return -1;
 	}
 	fread(mask_buffer + mask_buffer_end, 1, 680, f);
 	fclose(f);
 
-	for (i = 0; i < 680; i++) {
-		int index = mask_buffer[mask_buffer_end + i];
-		
-		
+	for (i = 0; i < 680; i += 4) {
+		int si = mask_buffer_end + i;
+		int index = mask_buffer[si];
+
+		len = readmem16l(mask_buffer + si);
+		mask_end_array[index] = mask_buffer_end + len;
+
+		if (index == 255) {
+			break;
+		}
 	}
 
 	/* Read mask dat file */
@@ -116,13 +124,19 @@ int read_sprite(int num)
 	strncpy(filename, mask_filename[num], FILENAME_SIZE);
 	strncat(filename, ".dat", FILENAME_SIZE);
 
-	if ((f = fopen(filename, "rb")) == NULL) {
+	if ((f = fopen_wrapper(filename, "rb")) == NULL) {
 		return -1;
 	}
 	fread(mask_buffer + mask_buffer_end, 1, len, f);
 	fclose(f);
 
-	if (sprite_buffer_end == 0) {
+	if (mask_buffer_end == 0) {
 		mask_buffer_end = len;
 	}
+
+	return 0;
+}
+
+void blit_sprite(int num, int x, int y)
+{
 }

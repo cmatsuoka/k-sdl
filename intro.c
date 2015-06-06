@@ -1,11 +1,18 @@
 #include <stdio.h>
 #include "common.h"
 #include "graphics.h"
+#include "sprite.h"
 
 
 void intro()
 {
 	for (;;) {
+		read_sprite(13);
+		clear_screen();
+		blit_sprite(91, 106, 115);
+		show_screen();
+		wait_nokey(72);
+
 		clear_screen();
 		write_text("a game by", 0x1a5b);
 		write_text("jordan mechner", 0x1f54);
