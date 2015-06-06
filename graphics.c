@@ -39,7 +39,7 @@ unsigned char palette[NUM_COLORS * 3]= {
 
 int init_graphics()
 {
-	if ((framebuffer = malloc(FB_WIDTH * FB_HEIGHT)) == NULL)
+	if ((framebuffer = malloc(FB_WIDTH * (FB_HEIGHT + 12))) == NULL)
 		goto err;
 
 
