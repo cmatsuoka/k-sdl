@@ -46,7 +46,46 @@ static char *text[] = {
 	NULL
 };
 
-static void scroller()
+static void broderbund_logo()
+{
+	read_sprite(13);
+	clear_screen();
+	blit_sprite(91, 106, 115, 0);
+	show_screen();
+	wait_nokey(72);
+}
+
+static int credits_author()
+{
+	clear_screen();
+	write_text("a game by", 0x1a5b);
+	write_text("jordan mechner", 0x1f54);
+	show_screen();
+	return !wait(72);
+}
+
+static int credits_port()
+{
+	clear_screen();
+	write_text("ibm version by", 0x1a56);
+	write_text("the connelley group", 0x1f50);
+	show_screen();
+	return !wait(72);
+}
+
+static int show_title()
+{
+	clear_screen();
+	load_bcg("title.bcg", 0x15e0, 0);
+	show_screen();
+	if (!wait(18))
+		return 1;
+	blit_sprite(92, 40, 180, 0);
+	show_screen();
+	return !wait(72);
+}
+
+static int scroller()
 {
 	int i, j;
 
@@ -59,46 +98,47 @@ static void scroller()
 			memmove(framebuffer, framebuffer + FB_WIDTH,
 						FB_WIDTH * (FB_HEIGHT + 11));
 			show_screen();
-			wait(1);
+			if (!wait(1)) {
+				return 1;
+			}
 		}
 	}
+
+	return 0;
+}
+
+static int demo()
+{
+	clear_screen();
+
+/*
+	compile_script("cal00", bytecode);
+	read_sprite(6);
+	execute_bytecode();
+*/
+
+	return 0;
 }
 
 void intro()
 {
 	for (;;) {
-		read_sprite(13);
-		clear_screen();
-		blit_sprite(91, 106, 115, 0);
-		show_screen();
-		wait_nokey(72);
+		broderbund_logo();
 
-		clear_screen();
-		write_text("a game by", 0x1a5b);
-		write_text("jordan mechner", 0x1f54);
-		show_screen();
-		if (!wait(72))
+		if (credits_author())
 			break;
 
-		clear_screen();
-		write_text("ibm version by", 0x1a56);
-		write_text("the connelley group", 0x1f50);
-		show_screen();
-		if (!wait(72))
+		if (credits_port())
 			break;
 
-		clear_screen();
-		load_bcg("title.bcg", 0x15e0, 0);
-		show_screen();
-		if (!wait(18))
-			break;
-		blit_sprite(92, 40, 180, 0);
-		show_screen();
-		if (!wait(72))
+		if (show_title())
 			break;
 
-		scroller();
+		if (scroller())
+			break;
+
+		if (demo())
+			break;
 	}
-
 	
 }
