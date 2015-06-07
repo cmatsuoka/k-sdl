@@ -32,7 +32,7 @@ int get_input()
 		poll_timer();
 	}
 
-	return get_key() == 0x1b;
+	return get_key();
 }
 
 int wait(int t)
@@ -73,7 +73,7 @@ static int check_disk()
 	write_text("press any key to continue", 0x21c8);
 	show_screen();
 
-	return get_input();
+	return get_input() != 0x1b;
 }
 
 FILE *fopen_wrapper(char *filename, char *mode)
