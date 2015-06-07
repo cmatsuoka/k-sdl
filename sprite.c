@@ -5,7 +5,7 @@
 #include "graphics.h"
 #include "sprite.h"
 
-#define NUM_SPRITES 14
+#define NUM_SPRITES	14
 #define SPRITE_BUFFER_SIZE 8000
 
 static const char *sprite_filename[NUM_SPRITES] = {
@@ -194,6 +194,10 @@ void blit_sprite(int num, int x, int y)
 	int offset;
 	int i, j;
 	unsigned char s, m;
+
+	if (num >= 255) {
+		return;
+	}
 
 	sprite_rle_count = 0;
 	mask_rle_count = 0;

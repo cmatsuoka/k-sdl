@@ -4,8 +4,18 @@
 #include "sprite.h"
 #include "script.h"
 
-#define LINE_SIZE 80
-#define NUM_CMD 14
+#define LINE_SIZE	80
+#define NUM_CMD		14
+#define NUM_FIGS	32
+
+struct fig {
+	int sprite;
+	int x;
+	int y;
+};
+
+static struct fig fig[NUM_FIGS];
+static int fig_index;
 
 #define CMD_SET_TUNE		0
 #define CMD_SET_BG		1
@@ -69,9 +79,19 @@ void (*bytecode_cmd[NUM_CMD - 1])(unsigned char *) = {
 	cmd_loop
 };
 
+
+static void draw_figs()
+{
+	int i;
+
+	for (i = 0; i < fig_index; i++) {
+		blit_sprite(fig[i].sprite, fig[i].x, fig[i].y);
+	}
+}
+
 static int parse_line(char *line, unsigned char *bytecode, int *pos)
 {
-	int i, val1, val2, val3;
+	int i, val1, val2, val3, val4;
 	char *t;
 	int p = *pos;
 
@@ -98,6 +118,10 @@ static int parse_line(char *line, unsigned char *bytecode, int *pos)
 		bytecode[p++] = val1;
 		break;
 	case CMD_SET_BG:
+		sscanf(t, "%d", &val1);
+		D_(D_INFO "%s,%d" , script_cmd[i], val1);
+		bytecode[p++] = i;
+		bytecode[p++] = val1;
 		break;
 	case CMD_SET_FIG:
 		sscanf(t, "%d %d %d", &val1, &val2, &val3);
@@ -110,8 +134,42 @@ static int parse_line(char *line, unsigned char *bytecode, int *pos)
 		bytecode[p++] = val3 >> 8;
 		break;
 	case CMD_CHG_FIG:
+		sscanf(t, "%d %d %d %d", &val1, &val2, &val3, &val4);
+		D_(D_INFO "%s,%d, %d %d %d", script_cmd[i],
+						val1, val2, val3, val4);
+		bytecode[p++] = i;
+		bytecode[p++] = val1;
+		bytecode[p++] = val2;
+		bytecode[p++] = val3 & 0xff;
+		bytecode[p++] = val3 >> 8;
+		bytecode[p++] = val4 & 0xff;
+		bytecode[p++] = val4 >> 8;
 		break;
 	case CMD_DO_SCR:
+		bytecode[p++] = i;
+		break;
+	case CMD_DEL_FIG:
+		sscanf(t, "%d", &val1);
+		D_(D_INFO "%s,%d", script_cmd[i], val1);
+		bytecode[p++] = i;
+		bytecode[p++] = val1;
+		break;
+	case CMD_SET_WIPE:
+		D_(D_INFO "%s" , script_cmd[i]);
+		bytecode[p++] = i;
+		break;
+	case CMD_SET_NOWIPE:
+		D_(D_INFO "%s" , script_cmd[i]);
+		bytecode[p++] = i;
+		break;
+	case CMD_WAIT:
+		sscanf(t, "%d", &val1);
+		D_(D_INFO "%s,%d" , script_cmd[i], val1);
+		bytecode[p++] = i;
+		bytecode[p++] = val1;
+		break;
+	case CMD_INIT_SAL:
+		D_(D_INFO "%s" , script_cmd[i]);
 		bytecode[p++] = i;
 		break;
 	}
@@ -140,10 +198,17 @@ void compile_script(char *filename, unsigned char *bytecode)
 	bytecode[pos] = CMD_END_ANIMATION;
 }
 
+static int executing_bytecode;
 static int bytecode_ip;
+static int current_bg;
+static int current_tune;
+static int wipe;
 
 void execute_bytecode()
 {
+	executing_bytecode = 1;
+
+	cmd_init_sal(NULL);
 	bytecode_ip = 0;
 
 	for (;;) {
@@ -158,53 +223,81 @@ void execute_bytecode()
 
 		bytecode_cmd[opcode](bytecode + bytecode_ip);
 	};
+
+	executing_bytecode = 0;
 }
 
 static void cmd_set_tune(unsigned char *v)
 {
+	current_tune = v[0];
 	bytecode_ip++;
 }
 
 static void cmd_set_bg(unsigned char *v)
 {
+	current_bg = v[0];
+	bytecode_ip++;
 }
 
 static void cmd_set_fig(unsigned char *v)
 {
-	int x = readmem16l(v + 1);
-	int y = readmem16l(v + 3);
-	blit_sprite(v[0], x, y);
+	fig[fig_index].sprite = v[0];
+	fig[fig_index].x = readmem16l(v + 1);
+	fig[fig_index].y = readmem16l(v + 3);
+	fig_index++;
 	bytecode_ip += 5;
 }
 
 static void cmd_chg_fig(unsigned char *v)
 {
+	int index = v[0];
+	fig[index].sprite = v[1];
+	fig[index].x = readmem16l(v + 2);
+	fig[index].y = readmem16l(v + 4);
+	bytecode_ip += 6;
 }
 
 static void cmd_do_scr(unsigned char *v)
 {
+	clear_screen();
+
+	/*draw_screen()*/
+	
+	draw_figs();
 	show_screen();
-	get_input();
+
+	wait(2);
 }
 
 static void cmd_del_fig(unsigned char *v)
 {
+	int index=v[0];
+	fig[index].sprite = 255;
+	bytecode_ip++;
 }
 
 static void cmd_set_wipe(unsigned char *v)
 {
+	wipe = 1;
 }
 
 static void cmd_set_nowipe(unsigned char *v)
 {
+	wipe = 0;
 }
 
 static void cmd_wait(unsigned char *v)
 {
+	wait_nokey(v[0]);
+	bytecode_ip++;
 }
 
 static void cmd_init_sal(unsigned char *v)
 {
+	current_tune = 0;
+	wipe = 0;
+	current_bg = 0;
+	fig_index = 0;
 }
 
 static void cmd_set_pos(unsigned char *v)
