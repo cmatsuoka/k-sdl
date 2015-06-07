@@ -123,7 +123,7 @@ int read_sprite(int num)
 		int si = mask_buffer_end + i;
 		int index = mask_buffer[si];
 
-		len = readmem16l(mask_buffer + si);
+		len = readmem16l(mask_buffer + si + 2);
 		mask_array[index] = mask_buffer_end + len;
 
 		if (index == 255) {
@@ -173,6 +173,10 @@ static void get_next_pixel(unsigned char *s, unsigned char *m)
 		sprite_rle_count--;
 	}
 
+	if (m == NULL) {
+		return;
+	}
+
 	if (mask_rle_count == 0) {
 		unsigned char c = mask_buffer[mask_offset++];
 		if (c == 0x7b) {
@@ -194,6 +198,7 @@ void blit_sprite(int num, int x, int y)
 	int offset;
 	int i, j;
 	unsigned char s, m;
+	unsigned char *mptr;
 
 	if (num >= 255) {
 		return;
@@ -215,10 +220,18 @@ void blit_sprite(int num, int x, int y)
 	sprite_offset += 3;
 	mask_offset += 3;
 
+	if (num >= 200) {
+		mptr = NULL;
+		m = 255;
+	} else {
+		mptr = &m;
+	}
+		
 	for (j = 0; j < width; j++) {
 		for (i = 0; i < height; i++) {
-			get_next_pixel(&s, &m);
-			unpack_pixels(offset + j * 4 + i * FB_WIDTH, s);
+			int ofs = offset + j * 4 + i * FB_WIDTH;
+			get_next_pixel(&s, mptr);
+			unpack_pixels(ofs, s, m);
 		}
 	}
 }

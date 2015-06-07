@@ -23,7 +23,7 @@ int load_bcg(char *filename, int offset)
 
 	for (i = 0; i < len; i++) {
 		int c = fgetc(f);
-		unpack_pixels(offset + i * 4, c);
+		unpack_pixels(offset + i * 4, c, 0xff);
 	}
 
 	fclose(f);

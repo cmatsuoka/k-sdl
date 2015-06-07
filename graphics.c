@@ -121,13 +121,17 @@ void flush_screen()
 }
 
 
-void unpack_pixels(int offset, unsigned char pixels)
+void unpack_pixels(int offset, unsigned char pixels, unsigned char mask)
 {
 	int i;
 
 	for (i = 0; i < 4; i++) {
-		framebuffer[offset + i] = ((pixels & 0xc0) >> 6)/*+pal_offset*/;
+		if ((mask & 0xc0) >> 6) {
+			unsigned char p = (pixels & 0xc0) >> 6;
+			framebuffer[offset + i] = p;
+		}
 		pixels <<= 2;
+		mask <<= 2;
 	}
 }
 
