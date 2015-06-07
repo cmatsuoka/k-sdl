@@ -5,7 +5,7 @@ if (CMAKE_COMPILER_IS_GNUCC)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -DDEBUG")
 endif()
 
-add_library(kar graphics.c sdl.c background.c sprite.c font.c util.c)
+add_library(kar graphics.c sdl.c background.c sprite.c font.c script.c util.c)
 add_executable(k main.c intro.c)
 target_link_libraries(k kar SDL)
 add_executable(show_bcg show_bcg.c)

@@ -3,6 +3,7 @@
 #include "common.h"
 #include "graphics.h"
 #include "sprite.h"
+#include "script.h"
 
 static char *text[] = {
 	"high atop a craggy cliff|",
@@ -111,8 +112,8 @@ static int demo()
 {
 	clear_screen();
 
-/*
 	compile_script("cal00", bytecode);
+/*
 	read_sprite(6);
 	execute_bytecode();
 */
@@ -123,6 +124,8 @@ static int demo()
 void intro()
 {
 	for (;;) {
+		init_sprites();
+
 		broderbund_logo();
 
 		if (credits_author())

@@ -5,6 +5,16 @@ Makefile
 *.cmake
 
 # generated files
+*.exe
+*.obj
 *.o
+*.a
 *~
+tags
 
+# karateka files
+*.bcg
+*.dat
+*.ind
+all[bcgpv]al
+[bc]al0*

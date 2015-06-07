@@ -44,11 +44,17 @@ static const char *mask_filename[NUM_SPRITES] = {
 
 static unsigned char sprite_buffer[SPRITE_BUFFER_SIZE];
 static int sprite_array[256];
-static int sprite_buffer_end = 0;
+static int sprite_buffer_end;
 
 static unsigned char mask_buffer[SPRITE_BUFFER_SIZE];
 static int mask_array[256];
-static int mask_buffer_end = 0;
+static int mask_buffer_end;
+
+void init_sprites()
+{
+	sprite_buffer_end = 0;
+	mask_buffer_end = 0;
+}
 
 int read_sprite(int num)
 {
