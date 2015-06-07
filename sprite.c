@@ -6,7 +6,7 @@
 #include "sprite.h"
 
 #define NUM_SPRITES 14
-#define SPRITE_BUFFER_SIZE 3000
+#define SPRITE_BUFFER_SIZE 8000
 
 static const char *sprite_filename[NUM_SPRITES] = {
 	"ks0",
@@ -50,11 +50,6 @@ static unsigned char mask_buffer[SPRITE_BUFFER_SIZE];
 static int mask_array[256];
 static int mask_buffer_end;
 
-void init_sprites()
-{
-	sprite_buffer_end = 0;
-	mask_buffer_end = 0;
-}
 
 int read_sprite(int num)
 {
@@ -66,6 +61,9 @@ int read_sprite(int num)
 	/* Sanity check */
 	if (num >= NUM_SPRITES)
 		return -1;
+
+	sprite_buffer_end = 0;
+	mask_buffer_end = 0;
 
 	/* Read sprite ind file */
 

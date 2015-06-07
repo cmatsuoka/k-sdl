@@ -108,15 +108,13 @@ static int scroller()
 	return 0;
 }
 
-static int demo()
+static int story()
 {
 	clear_screen();
 
 	compile_script("cal00", bytecode);
-/*
 	read_sprite(6);
 	execute_bytecode();
-*/
 
 	return 0;
 }
@@ -124,8 +122,7 @@ static int demo()
 void intro()
 {
 	for (;;) {
-		init_sprites();
-
+/*
 		broderbund_logo();
 
 		if (credits_author())
@@ -139,9 +136,13 @@ void intro()
 
 		if (scroller())
 			break;
-
-		if (demo())
+*/
+		if (story())
 			break;
+
+		break;
 	}
+
+	get_input();
 	
 }
