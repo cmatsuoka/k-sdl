@@ -104,8 +104,10 @@ static int parse_line(char *line, unsigned char *bytecode, int *pos)
 		D_(D_INFO "%s,%d %d %d", script_cmd[i], val1, val2, val3);
 		bytecode[p++] = i;
 		bytecode[p++] = val1;
-		bytecode[p++] = val2;
-		bytecode[p++] = val3;
+		bytecode[p++] = val2 & 0xff;
+		bytecode[p++] = val2 >> 8;
+		bytecode[p++] = val3 & 0xff;
+		bytecode[p++] = val3 >> 8;
 		break;
 	case CMD_CHG_FIG:
 		break;
@@ -169,8 +171,10 @@ static void cmd_set_bg(unsigned char *v)
 
 static void cmd_set_fig(unsigned char *v)
 {
-	blit_sprite(v[0], v[1], v[2], 0);
-	bytecode_ip += 3;
+	int x = readmem16l(v + 1);
+	int y = readmem16l(v + 3);
+	blit_sprite(v[0], x, y);
+	bytecode_ip += 5;
 }
 
 static void cmd_chg_fig(unsigned char *v)
