@@ -9,7 +9,7 @@ void clear_screen()
 	memset(framebuffer, 0, FB_WIDTH * FB_HEIGHT);
 }
 
-int load_bcg(char *filename, int offset, int pal_offset)
+int load_bcg(char *filename, int offset)
 {
 	FILE *f;
 	int len;
@@ -23,7 +23,7 @@ int load_bcg(char *filename, int offset, int pal_offset)
 
 	for (i = 0; i < len; i++) {
 		int c = fgetc(f);
-		unpack_pixels(offset + i * 4, c, pal_offset);
+		unpack_pixels(offset + i * 4, c);
 	}
 
 	fclose(f);

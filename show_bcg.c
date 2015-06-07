@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 	init_graphics();
 
 	clear_screen();
-	if (load_bcg(argv[1], 0, 0) < 0) {
+	if (load_bcg(argv[1], 0) < 0) {
 		perror(argv[0]);
 	} else {
 		show_screen();

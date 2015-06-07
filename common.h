@@ -30,7 +30,7 @@ int readmem16l(unsigned char *);
 void write_text(char *, int);
 void clear_screen(void);
 void show_screen(void);
-int load_bcg(char *, int, int);
+int load_bcg(char *, int);
 void intro(void);
 int get_input(void);
 int wait(int);

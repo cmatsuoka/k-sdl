@@ -4,7 +4,7 @@
 
 #define FB_WIDTH 320
 #define FB_HEIGHT 200
-#define NUM_COLORS 16
+#define NUM_COLORS 4
 
 
 struct gfx_driver {
@@ -27,6 +27,6 @@ int get_key(void);
 int keypress(void);
 void flush_block(int, int, int, int);
 void flush_screen(void);
-void unpack_pixels(int, unsigned char, int);
+void unpack_pixels(int, unsigned char);
 
 #endif

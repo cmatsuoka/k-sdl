@@ -51,7 +51,7 @@ static void broderbund_logo()
 {
 	read_sprite(13);
 	clear_screen();
-	blit_sprite(91, 106, 115, 0);
+	blit_sprite(91, 106, 115);
 	show_screen();
 	wait_nokey(72);
 }
@@ -77,11 +77,11 @@ static int credits_port()
 static int show_title()
 {
 	clear_screen();
-	load_bcg("title.bcg", 0x15e0, 0);
+	load_bcg("title.bcg", 0x15e0);
 	show_screen();
 	if (!wait(18))
 		return 1;
-	blit_sprite(92, 40, 180, 0);
+	blit_sprite(92, 40, 180);
 	show_screen();
 	return !wait(72);
 }

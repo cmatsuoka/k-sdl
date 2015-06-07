@@ -188,7 +188,7 @@ static void get_next_pixel(unsigned char *s, unsigned char *m)
 	}
 }
 
-void blit_sprite(int num, int x, int y, int pal_offset)
+void blit_sprite(int num, int x, int y)
 {
 	int width, height;
 	int offset;
@@ -214,7 +214,7 @@ void blit_sprite(int num, int x, int y, int pal_offset)
 	for (j = 0; j < width; j++) {
 		for (i = 0; i < height; i++) {
 			get_next_pixel(&s, &m);
-			unpack_pixels(offset + j * 4 + i * FB_WIDTH, s, pal_offset);
+			unpack_pixels(offset + j * 4 + i * FB_WIDTH, s);
 		}
 	}
 }
