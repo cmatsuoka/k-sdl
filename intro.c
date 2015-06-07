@@ -119,6 +119,18 @@ static int story()
 	return 0;
 }
 
+static int demo()
+{
+	clear_screen();
+
+	compile_script("cal01", bytecode);
+	load_bcg("fuji.bcg", 0x02a5);
+	read_bal(0);
+	execute_bytecode();
+
+	return 0;
+}
+
 void intro()
 {
 	for (;;) {
@@ -138,6 +150,9 @@ void intro()
 			break;
 */
 		if (story())
+			break;
+
+		if (demo())
 			break;
 
 		break;

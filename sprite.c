@@ -212,8 +212,8 @@ void blit_sprite(int num, int x, int y)
 	width = sprite_buffer[sprite_offset];
 	height = sprite_buffer[sprite_offset + 1];
 
-	D_(D_INFO "sprite_offset=%d mask_offset=%d width=%d height=%d",
-				sprite_offset, mask_offset, width, height);
+	/* D_(D_INFO "sprite_offset=%d mask_offset=%d width=%d height=%d",
+				sprite_offset, mask_offset, width, height); */
 
 	y -= height;
 	offset = y * FB_WIDTH + x;

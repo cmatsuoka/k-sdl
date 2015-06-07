@@ -214,12 +214,12 @@ void execute_bytecode()
 	for (;;) {
 		int opcode = bytecode[bytecode_ip++];
 
-		D_(D_INFO "opcode=%d (%s)", opcode, script_cmd[opcode]);
-
 		if (opcode == 255) {
 			D_(D_WARN "End animation");
 			break;
 		}
+
+		D_(D_INFO "opcode=%d (%s)", opcode, script_cmd[opcode]);
 
 		bytecode_cmd[opcode](bytecode + bytecode_ip);
 	};
@@ -312,3 +312,7 @@ static void cmd_loop(unsigned char *v)
 {
 }
 
+void read_bal(int num)
+{
+	read_sprite(num);
+}
