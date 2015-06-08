@@ -23,6 +23,7 @@ static int fig_index;
 
 int attract_mode;
 int bal_num;
+int game_flags;
 
 #define CMD_SET_TUNE		0
 #define CMD_SET_BG		1
@@ -114,15 +115,25 @@ static void draw_fence()
 {
 }
 
-static void draw_screen()
+static void erase_wall()
 {
+	if (bal_num < 2) {
+		memset(framebuffer + 0x21c0 * 4, 0, 1920 * 8);
+	} else {
+		memset(framebuffer + 0x23a0 * 4, 0, 1680 * 8);
+	}
+}
+
+static void draw_scenario()
+{
+	int i, j;
+	unsigned char p;
+
 	if (attract_mode) {
 		if (bal_num < 2) {
-			/* draw sky? */
+			/* draw sky */
 			int i;
-			for (i = 0; i < FB_WIDTH * 40; i++) {
-				framebuffer[i] = 1;
-			}
+			memset(framebuffer, 1, FB_WIDTH * 40);
 		} else {
 			clear_screen();
 			if (executing_bytecode) {
@@ -132,8 +143,36 @@ static void draw_screen()
 	}
 
 	if (bal_num < 2) {
-		
+		//if (game_flags != comp_to_uid_1) {
+			/* erase mt. fuji */
+			memset(framebuffer + 0x0a00 * 4, 1, 3840 * 8);
+			memset(framebuffer + 0x1900 * 4, 1, 1360 * 8);
+			memset(framebuffer + 0x2120 * 4, 2, 40 * 8);
+			memset(framebuffer + 0x2200 * 4, 3, 120 * 8);
+		//}
+
+		erase_wall();
+		p = 0x99;
+
+		if (game_flags & 0x01) {
+			p = 0x66;
+		}
+
+		/* draw ground */
+
+		for (i = 0; i < 30; i++) {
+			for (j = 0; j < FB_WIDTH; j += 4) {
+				unpack_pixels(0x3020 * 4 + i * FB_WIDTH + j, p, 255);
+			}
+			p ^= 0xff;
+		}
+
+	} else {
+
+		erase_wall();
+
 	}
+	
 }
 
 static int parse_line(char *line, unsigned char *bytecode, int *pos)
@@ -307,7 +346,7 @@ static void cmd_do_scr(unsigned char *v)
 {
 	//fig_index = 3;
 
-	draw_screen();
+	draw_scenario();
 	draw_figs();
 	show_screen();
 
@@ -375,11 +414,11 @@ void read_bal(int num)
 {
 	read_sprite(num);
 	
-	if (num < NUM_BAL) {
-		compile_script(bal[num], bytecode + 0x03fe);
+	if (num < 4) {
+		compile_script(bal[num], bytecode_bal);
 
 		if (num < 2) {
-			index_bal_bytecode(2);
+			index_bal_bytecode(1);
 		} else {
 			index_bal_bytecode(6);
 		}

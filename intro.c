@@ -110,8 +110,8 @@ static int scroller()
 
 static int story()
 {
+	game_flags = 0;
 	clear_screen();
-
 	attract_mode = 1;
 	bal_num = 4;
 
@@ -124,10 +124,9 @@ static int story()
 
 static int demo()
 {
-	clear_screen();
-
+	bal_num = 0;
 	compile_script("cal01", bytecode);
-	load_bcg("fuji.bcg", 0x02a5);
+	load_bcg("fuji.bcg", FUJI_OFFSET);
 	read_bal(0);
 	execute_bytecode();
 

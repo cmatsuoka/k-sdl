@@ -6,6 +6,8 @@
 #define BYTECODE_SIZE 2048
 #define BYTECODE_BAL_SIZE 670
 
+#define FUJI_OFFSET 0x02a5
+
 #include <stdio.h>
 
 #ifdef DEBUG
@@ -26,6 +28,7 @@
 extern unsigned char bytecode[BYTECODE_SIZE];
 extern int attract_mode;
 extern int bal_num;
+extern int game_flags;
 
 FILE *fopen_wrapper(char *, char *);
 int read16l(FILE *);
