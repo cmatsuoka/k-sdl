@@ -27,7 +27,7 @@
 
 extern unsigned char bytecode[BYTECODE_SIZE];
 extern int attract_mode;
-extern int bal_num;
+extern int stage;
 extern int game_flags;
 
 FILE *fopen_wrapper(char *, char *);

@@ -113,7 +113,7 @@ static int story()
 	game_flags = 0;
 	clear_screen();
 	attract_mode = 1;
-	bal_num = 4;
+	stage = 4;
 
 	compile_script("cal00", bytecode);
 	read_sprite(6);
@@ -124,7 +124,7 @@ static int story()
 
 static int demo()
 {
-	bal_num = 0;
+	stage = 0;
 	compile_script("cal01", bytecode);
 	load_bcg("fuji.bcg", FUJI_OFFSET);
 	read_bal(0);
