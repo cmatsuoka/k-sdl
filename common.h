@@ -4,6 +4,7 @@
 
 #define FILENAME_SIZE 20
 #define BYTECODE_SIZE 2048
+#define BYTECODE_BAL_SIZE 670
 
 #include <stdio.h>
 
@@ -22,7 +23,7 @@
 
 #define read8(f) fgetc(f)
 
-extern unsigned char *bytecode;
+extern unsigned char bytecode[BYTECODE_SIZE];
 
 FILE *fopen_wrapper(char *, char *);
 int read16l(FILE *);

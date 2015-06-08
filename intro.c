@@ -134,7 +134,8 @@ static int demo()
 void intro()
 {
 	for (;;) {
-/*
+
+#if 0
 		broderbund_logo();
 
 		if (credits_author())
@@ -148,7 +149,8 @@ void intro()
 
 		if (scroller())
 			break;
-*/
+#endif
+
 		if (story())
 			break;
 

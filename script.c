@@ -6,6 +6,7 @@
 
 #define LINE_SIZE	80
 #define NUM_CMD		14
+#define NUM_BAL		4
 #define NUM_FIGS	32
 
 struct fig {
@@ -13,6 +14,9 @@ struct fig {
 	int x;
 	int y;
 };
+
+unsigned char bytecode[BYTECODE_SIZE];
+unsigned char bytecode_bal[BYTECODE_BAL_SIZE];
 
 static struct fig fig[NUM_FIGS];
 static int fig_index;
@@ -45,6 +49,13 @@ static void cmd_init_sal(unsigned char *);
 static void cmd_set_pos(unsigned char *);
 static void cmd_inc_x(unsigned char *);
 static void cmd_loop(unsigned char *);
+
+static char *bal[NUM_BAL] = {
+	"bal00",
+	"bal01",
+	"bal02",
+	"bal03"
+};
 
 static char *script_cmd[NUM_CMD] = {
 	"set_tune",
@@ -196,7 +207,11 @@ void compile_script(char *filename, unsigned char *bytecode)
 	}
 
 	bytecode[pos] = CMD_END_ANIMATION;
+
+	D_(D_WARN "bytecode space used: %d", pos);
 }
+
+/* ----------------------- Bytecode interpreter ------------------------ */
 
 static int executing_bytecode;
 static int bytecode_ip;
@@ -312,7 +327,37 @@ static void cmd_loop(unsigned char *v)
 {
 }
 
+/* ------------------------- BAL script stuff -------------------------- */
+
+static void index_bal_bytecode(int n)
+{
+	int i, bal_ip, bal_offset;
+
+	bal_ip = 0;
+	bal_offset = 0;
+
+	for (i = 0; i < 16; i++) {
+		
+	}
+}
+
 void read_bal(int num)
 {
 	read_sprite(num);
+	
+	if (num < NUM_BAL) {
+		compile_script(bal[num], bytecode + 0x03fe);
+
+		if (num < 2) {
+			index_bal_bytecode(2);
+		} else {
+			index_bal_bytecode(6);
+		}
+	}
+
+	if (num == 2) {
+		/* wtf3 */
+	}
+		
+	/* wtf4(num) */
 }
