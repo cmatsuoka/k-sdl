@@ -21,6 +21,9 @@ unsigned char bytecode_bal[BYTECODE_BAL_SIZE];
 static struct fig fig[NUM_FIGS];
 static int fig_index;
 
+int attract_mode;
+int bal_num;
+
 #define CMD_SET_TUNE		0
 #define CMD_SET_BG		1
 #define CMD_SET_FIG		2
@@ -91,12 +94,45 @@ void (*bytecode_cmd[NUM_CMD - 1])(unsigned char *) = {
 };
 
 
+/* Bytecode vars */
+static int executing_bytecode;
+static int bytecode_ip;
+static int current_bg;
+static int current_tune;
+static int wipe;
+
 static void draw_figs()
 {
 	int i;
 
 	for (i = 0; i < fig_index; i++) {
 		blit_sprite(fig[i].sprite, fig[i].x, fig[i].y);
+	}
+}
+
+static void draw_fence()
+{
+}
+
+static void draw_screen()
+{
+	if (attract_mode) {
+		if (bal_num < 2) {
+			/* draw sky? */
+			int i;
+			for (i = 0; i < FB_WIDTH * 40; i++) {
+				framebuffer[i] = 1;
+			}
+		} else {
+			clear_screen();
+			if (executing_bytecode) {
+				draw_fence();
+			}
+		}
+	}
+
+	if (bal_num < 2) {
+		
 	}
 }
 
@@ -213,11 +249,6 @@ void compile_script(char *filename, unsigned char *bytecode)
 
 /* ----------------------- Bytecode interpreter ------------------------ */
 
-static int executing_bytecode;
-static int bytecode_ip;
-static int current_bg;
-static int current_tune;
-static int wipe;
 
 void execute_bytecode()
 {
@@ -274,10 +305,9 @@ static void cmd_chg_fig(unsigned char *v)
 
 static void cmd_do_scr(unsigned char *v)
 {
-	clear_screen();
+	//fig_index = 3;
 
-	/*draw_screen()*/
-	
+	draw_screen();
 	draw_figs();
 	show_screen();
 
@@ -356,7 +386,7 @@ void read_bal(int num)
 	}
 
 	if (num == 2) {
-		/* wtf3 */
+		/* check_tampering(); */
 	}
 		
 	/* wtf4(num) */

@@ -112,6 +112,9 @@ static int story()
 {
 	clear_screen();
 
+	attract_mode = 1;
+	bal_num = 4;
+
 	compile_script("cal00", bytecode);
 	read_sprite(6);
 	execute_bytecode();
