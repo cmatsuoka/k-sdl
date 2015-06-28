@@ -11,6 +11,12 @@ struct fig {
 	int y;
 };
 
+
+extern unsigned char bytecode[BYTECODE_SIZE];
+extern int attract_mode;
+extern int stage;
+extern int game_flags;
+extern int sound_state;
 extern int executing_bytecode;
 extern struct fig fig[NUM_FIGS];
 extern int fig_index;

@@ -15,6 +15,7 @@ int fig_index;
 int attract_mode;
 int stage;
 int game_flags;
+int sound_state;
 
 #define CMD_SET_TUNE		0
 #define CMD_SET_BG		1

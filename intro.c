@@ -149,17 +149,15 @@ static int demo()
 
 		do_scr();
 
-#if 0
-		if (some_state >= 0) {
-			if (some_state == 2) {
+		if (sound_state >= 0) {
+			if (sound_state == 2) {
 				play_sound(8);
 			} else {
 				play_sound(1);
 			}
 
-			some_state = 0;
+			sound_state = 0;
 		}
-#endif
 
 		draw_fence();
 		end = check_x();

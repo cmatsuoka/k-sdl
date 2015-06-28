@@ -25,11 +25,6 @@
 
 #define read8(f) fgetc(f)
 
-extern unsigned char bytecode[BYTECODE_SIZE];
-extern int attract_mode;
-extern int stage;
-extern int game_flags;
-
 FILE *fopen_wrapper(char *, char *);
 int read16l(FILE *);
 int readmem16l(unsigned char *);
