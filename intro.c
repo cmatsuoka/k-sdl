@@ -4,6 +4,7 @@
 #include "graphics.h"
 #include "sprite.h"
 #include "script.h"
+#include "draw.h"
 
 static char *text[] = {
 	"high atop a craggy cliff|",
@@ -122,13 +123,47 @@ static int story()
 	return 0;
 }
 
+static int check_x()
+{
+	return 1;
+}
+
 static int demo()
 {
+	int end = 0;
+
 	stage = 0;
 	compile_script("cal01", bytecode);
 	load_bcg("fuji.bcg", FUJI_OFFSET);
 	read_bal(0);
 	execute_bytecode();
+
+	stage = 0;
+	/* check_key_in_script = 1; */
+
+	while (!end) {
+		poll_timer();
+
+		/* call_22e1(); */
+		/* call_2bdd(); */
+
+		do_scr();
+
+#if 0
+		if (some_state >= 0) {
+			if (some_state == 2) {
+				play_sound(8);
+			} else {
+				play_sound(1);
+			}
+
+			some_state = 0;
+		}
+#endif
+
+		draw_fence();
+		end = check_x();
+	}
 
 	return 0;
 }

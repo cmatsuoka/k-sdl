@@ -2,25 +2,16 @@
 #include "common.h"
 #include "graphics.h"
 #include "sprite.h"
+#include "draw.h"
 #include "script.h"
 
 #define LINE_SIZE	80
-#define NUM_CMD		14
-#define NUM_BAL		4
-#define NUM_FIGS	32
-
-struct fig {
-	int sprite;
-	int x;
-	int y;
-};
 
 unsigned char bytecode[BYTECODE_SIZE];
 unsigned char bytecode_bal[BYTECODE_BAL_SIZE];
 
-static struct fig fig[NUM_FIGS];
-static int fig_index;
-
+struct fig fig[NUM_FIGS];
+int fig_index;
 int attract_mode;
 int stage;
 int game_flags;
@@ -96,123 +87,12 @@ void (*bytecode_cmd[NUM_CMD - 1])(unsigned char *) = {
 
 
 /* Bytecode vars */
-static int executing_bytecode;
+int executing_bytecode;
 static int bytecode_ip;
 static int current_bg;
 static int current_tune;
 static int wipe;
-
-static void draw_figs()
-{
-	int i;
-
-	for (i = 0; i < fig_index; i++) {
-		blit_sprite(fig[i].sprite, fig[i].x, fig[i].y);
-	}
-}
-
-static void draw_fence()
-{
-}
-
-static void erase_wall()
-{
-	if (stage < 2) {
-		memset(framebuffer + 0x21c0 * 4, 0, 1920 * 8);
-	} else {
-		memset(framebuffer + 0x23a0 * 4, 0, 1680 * 8);
-	}
-}
-
-static void draw_scenario()
-{
-	int i, j;
-	unsigned char p;
-
-	if (attract_mode) {
-		if (stage < 2) {
-			/* draw sky */
-			int i;
-			memset(framebuffer, 1, FB_WIDTH * 40);
-		} else {
-			clear_screen();
-			if (executing_bytecode) {
-				draw_fence();
-			}
-		}
-	}
-
-	if (stage < 2) {
-		//if (game_flags != comp_to_uid_1) {
-			/* erase mt. fuji */
-			memset(framebuffer + 0x0a00 * 4, 1, 3840 * 8);
-			memset(framebuffer + 0x1900 * 4, 1, 1360 * 8);
-			memset(framebuffer + 0x2120 * 4, 2, 40 * 8);
-			memset(framebuffer + 0x2200 * 4, 3, 120 * 8);
-		//}
-
-		erase_wall();
-		p = 0x99;
-
-		if (game_flags & 0x01) {
-			p = 0x66;
-		}
-
-		/* draw ground */
-
-		for (i = 0; i < 30; i++) {
-			for (j = 0; j < FB_WIDTH; j += 4) {
-				unpack_pixels(0x3020 * 4 + i * FB_WIDTH + j, p, 255);
-			}
-			p ^= 0xff;
-		}
-
-		return;
-	}
-
-	erase_wall();
-
-	if (stage < 3) {
-		/* Inside palace */
-
-		//if (game_flags != comp_to_uid_1) {
-			memset(framebuffer + 0x0a00 * 4, 0, 3840 * 8);
-			memset(framebuffer + 0x1900 * 4, 2, 880 * 8);
-			memset(framebuffer + 0x1c20 * 4, 0, 80 * 8);
-		//}
-
-		/* draw orange floor */
-
-		p = 0xaa;
-
-		for (i = 0; i < 30; i++) {
-			for (j = 0; j < FB_WIDTH; j += 4) {
-				unpack_pixels(0x3020 * 4 + i * FB_WIDTH + j, p, 255);
-			}
-			p ^= 0xaa;
-		}
-
-		return;
-
-	} else {
-		/* Dungeon */
-
-		//if (game_flags != comp_to_uid_1) {
-			memset(framebuffer, 0, 4560 * 8);
-		//}
-
-		p = 0x55;
-
-		/* draw blue floor */
-
-		for (i = 0; i < 30; i++) {
-			for (j = 0; j < FB_WIDTH; j += 4) {
-				unpack_pixels(0x3020 * 4 + i * FB_WIDTH + j, p, 255);
-			}
-			p ^= 0x55;
-		}
-	}
-}
+static int do_scr_wait_key = 0;
 
 static int parse_line(char *line, unsigned char *bytecode, int *pos)
 {
@@ -383,13 +263,10 @@ static void cmd_chg_fig(unsigned char *v)
 
 static void cmd_do_scr(unsigned char *v)
 {
-	//fig_index = 3;
-
-	draw_scenario();
-	draw_figs();
-	show_screen();
-
-	wait(2);
+	do_scr();
+	if (do_scr_wait_key) {
+		get_input();
+	}
 }
 
 static void cmd_del_fig(unsigned char *v)
@@ -411,7 +288,9 @@ static void cmd_set_nowipe(unsigned char *v)
 
 static void cmd_wait(unsigned char *v)
 {
-	wait_nokey(v[0]);
+	if (do_scr_wait_key == 0) {
+		wait_nokey(v[0]);
+	}
 	bytecode_ip++;
 }
 
@@ -425,6 +304,15 @@ static void cmd_init_sal(unsigned char *v)
 
 static void cmd_set_pos(unsigned char *v)
 {
+#if 0
+	if (do_scr_wait_key == 1) {
+		cmd_do_scr(v);
+		cmd_init_sal(v);
+	}
+
+	/* auto_x_offset = 2; */
+	bytecode_ip += 2;
+#endif
 }
 
 static void cmd_inc_x(unsigned char *v)
