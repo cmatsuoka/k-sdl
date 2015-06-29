@@ -11,6 +11,7 @@
 #include <stdio.h>
 
 #ifdef DEBUG
+#include <string.h>
 #define FILE__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 #define D_INFO "\x1b[33m"
 #define D_CRIT "\x1b[31m"
