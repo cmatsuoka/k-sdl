@@ -16,6 +16,8 @@ int attract_mode;
 int stage;
 int game_flags;
 int sound_state;
+int current_tune;
+int wipe;
 
 #define CMD_SET_TUNE		0
 #define CMD_SET_BG		1
@@ -91,8 +93,6 @@ void (*bytecode_cmd[NUM_CMD - 1])(unsigned char *) = {
 int executing_bytecode;
 static int bytecode_ip;
 static int current_bg;
-static int current_tune;
-static int wipe;
 static int do_scr_wait_key = 0;
 
 static int parse_line(char *line, unsigned char *bytecode, int *pos)
@@ -137,7 +137,6 @@ static int parse_line(char *line, unsigned char *bytecode, int *pos)
 		bytecode[p++] = val2 & 0xff;
 		bytecode[p++] = val2 >> 8;
 		bytecode[p++] = val3 & 0xff;
-		bytecode[p++] = val3 >> 8;
 		break;
 	case CMD_CHG_FIG:
 		sscanf(t, "%d %d %d %d", &val1, &val2, &val3, &val4);
@@ -149,7 +148,6 @@ static int parse_line(char *line, unsigned char *bytecode, int *pos)
 		bytecode[p++] = val3 & 0xff;
 		bytecode[p++] = val3 >> 8;
 		bytecode[p++] = val4 & 0xff;
-		bytecode[p++] = val4 >> 8;
 		break;
 	case CMD_DO_SCR:
 		bytecode[p++] = i;
@@ -248,9 +246,10 @@ static void cmd_set_fig(unsigned char *v)
 {
 	fig[fig_index].sprite = v[0];
 	fig[fig_index].x = readmem16l(v + 1);
-	fig[fig_index].y = readmem16l(v + 3);
+	fig[fig_index].y = v[3];
 	fig_index++;
-	bytecode_ip += 5;
+	fig[fig_index].sprite = 255;
+	bytecode_ip += 4;
 }
 
 static void cmd_chg_fig(unsigned char *v)
@@ -258,8 +257,8 @@ static void cmd_chg_fig(unsigned char *v)
 	int index = v[0];
 	fig[index].sprite = v[1];
 	fig[index].x = readmem16l(v + 2);
-	fig[index].y = readmem16l(v + 4);
-	bytecode_ip += 6;
+	fig[index].y = v[4];
+	bytecode_ip += 5;
 }
 
 static void cmd_do_scr(unsigned char *v)
@@ -272,8 +271,15 @@ static void cmd_do_scr(unsigned char *v)
 
 static void cmd_del_fig(unsigned char *v)
 {
-	int index=v[0];
-	fig[index].sprite = 255;
+	int i;
+
+	fig_index--;
+	for (i = v[0]; i < fig_index; i++) {
+		fig[i].sprite = fig[i + 1].sprite;
+		fig[i].x = fig[i + 1].x;
+		fig[i].y = fig[i + 1].y;
+	}
+	fig[i].sprite = 255;
 	bytecode_ip++;
 }
 

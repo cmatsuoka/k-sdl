@@ -20,6 +20,8 @@ extern int sound_state;
 extern int executing_bytecode;
 extern struct fig fig[NUM_FIGS];
 extern int fig_index;
+extern int current_tune;
+extern int wipe;
 
 void compile_script(char *, unsigned char *);
 void execute_bytecode(void);

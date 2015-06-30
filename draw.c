@@ -37,7 +37,7 @@ void draw_scenario()
 			/* draw sky */
 			memset(framebuffer, 1, FB_WIDTH * 40);
 		} else {
-			clear_screen();
+			//clear_screen();
 			if (executing_bytecode) {
 				draw_fence();
 			}
@@ -118,12 +118,40 @@ void draw_scenario()
 
 void do_scr()
 {
-	//fig_index = 3;
+	int i;
 
+	fig_index = 0;
+
+wait(2);
 	draw_scenario();
-	draw_figs();
-	show_screen();
 
-	wait(2);
+	for (i = 0; fig[i].sprite != 255; i++) {
+		if ((~fig[i].x & 0x8000) && (fig[i].x & 0x4000)) {
+			/*draw_fig(fig[i].sprite, fig[i].x ^ 0x4000, fig[i].y);*/
+			D_(D_CRIT "draw_fig %d %d %d\n",
+				fig[i].sprite, fig[i].x ^ 0x4000, fig[i].y);
+		} else {
+			blit_sprite(fig[i].sprite, fig[i].x, fig[i].y);
+		}
+
+		fig_index++;
+	}
+
+	D_(D_WARN "draw %d figs", i);
+
+	if (!wipe) {
+		if (attract_mode) {
+			show_screen();
+			play_sound(current_tune);
+			return;
+		}	
+
+		/* copy_fb_area(); */
+		play_sound(current_tune);
+		return;
+	}
+
+	/* blit_something(); */
+	play_sound(current_tune);
 }
 
