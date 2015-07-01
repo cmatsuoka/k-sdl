@@ -35,7 +35,7 @@ int get_input()
 	return get_key();
 }
 
-int wait(int t)
+int wait_key(int t)
 {
 	int i;
 

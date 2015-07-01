@@ -4,6 +4,7 @@
 #include "graphics.h"
 #include "sprite.h"
 #include "script.h"
+#include "sound.h"
 #include "draw.h"
 
 static char *text[] = {
@@ -63,7 +64,7 @@ static int credits_author()
 	write_text("a game by", 0x1a5b);
 	write_text("jordan mechner", 0x1f54);
 	show_screen();
-	return !wait(72);
+	return !wait_key(72);
 }
 
 static int credits_port()
@@ -72,7 +73,7 @@ static int credits_port()
 	write_text("ibm version by", 0x1a56);
 	write_text("the connelley group", 0x1f50);
 	show_screen();
-	return !wait(72);
+	return !wait_key(72);
 }
 
 static int show_title()
@@ -80,11 +81,11 @@ static int show_title()
 	clear_screen();
 	load_bcg("title.bcg", 0x15e0);
 	show_screen();
-	if (!wait(18))
+	if (!wait_key(18))
 		return 1;
 	blit_sprite(92, 40, 180);
 	show_screen();
-	return !wait(72);
+	return !wait_key(72);
 }
 
 static int scroller()
@@ -100,7 +101,7 @@ static int scroller()
 			memmove(framebuffer, framebuffer + FB_WIDTH,
 						FB_WIDTH * (FB_HEIGHT + 11));
 			show_screen();
-			if (!wait(1)) {
+			if (!wait_key(1)) {
 				return 1;
 			}
 		}

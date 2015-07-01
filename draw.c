@@ -3,6 +3,7 @@
 #include "graphics.h"
 #include "sprite.h"
 #include "script.h"
+#include "sound.h"
 #include "draw.h"
 
 void draw_figs()
@@ -122,7 +123,7 @@ void do_scr()
 
 	fig_index = 0;
 
-wait(2);
+wait_key(2);
 	draw_scenario();
 
 	for (i = 0; fig[i].sprite != 255; i++) {

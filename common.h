@@ -35,7 +35,7 @@ void show_screen(void);
 int load_bcg(char *, int);
 void intro(void);
 int get_input(void);
-int wait(int);
+int wait_key(int);
 void wait_nokey(int);
 
 #endif
